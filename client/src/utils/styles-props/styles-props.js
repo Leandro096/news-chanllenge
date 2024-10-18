@@ -1,7 +1,4 @@
 export const StylesProps = [
-    "statuscolor",
-    "justifyContent",
-    "shrink",
-    "buttonType",
+    "isSelected",
     "active",
 ]

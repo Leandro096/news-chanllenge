@@ -23,6 +23,10 @@ export const DropdownButton = styled.div`
     &:hover {
         background-color: #303A63;
     }
+
+    @media (max-width: 425px) {
+        font-size: 0.9rem;
+    }
 `;
 
 export const DropdownContent = styled.div`

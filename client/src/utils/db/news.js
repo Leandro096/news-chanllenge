@@ -1,15 +1,9 @@
 import api from "../services/api/api";
 
-export const getNews = async (country, categories, language, source, page) => {
+export const getNews = async (params = {}) => {
     try {
         const response = await api.get('/api/news/top-headlines', {
-            params: { 
-                country,
-                language,
-                source,
-                categories,  // This should be a comma-separated string
-                page 
-            }
+            params: params
         });
         return response.data;
     } catch (error) {
@@ -17,18 +11,12 @@ export const getNews = async (country, categories, language, source, page) => {
     }
 };
 
-export const getEverything = async (query, from, to, language, category, source, sortBy, page) => {
+export const getEverything = async (queries) => {
+    console.log(queries);
     try {
         const response = await api.get('/api/news/everything', {
             params: {
-                q: query,
-                from,
-                to,
-                language,
-                category,
-                source,
-                sortBy,
-                page,
+                ...queries
             },
         });
         return response.data; // Return the data from the response

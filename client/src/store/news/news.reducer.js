@@ -11,6 +11,7 @@ export const newsReducer = (state = INITIAL_STATE, action) => {
 
     switch (type) {
         case NEWS_ACTION_TYPES.FETCH_NEWS_START:
+        case NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_START:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_START:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_START:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SOURCE_START:
@@ -20,9 +21,11 @@ export const newsReducer = (state = INITIAL_STATE, action) => {
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_FILTERS_START:
             return {
                 ...state,
+                errorMessage: null,
                 isLoading: true,
             };
         case NEWS_ACTION_TYPES.FETCH_NEWS_SUCCESS:
+        case NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_SUCCESS:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_SUCCESS:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_SUCCESS:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SOURCE_SUCCESS:
@@ -36,6 +39,7 @@ export const newsReducer = (state = INITIAL_STATE, action) => {
                 isLoading: false,
             };
         case NEWS_ACTION_TYPES.FETCH_NEWS_FAILED:
+        case NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_FAILED:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_FAILED:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_FAILED:
         case NEWS_ACTION_TYPES.FETCH_NEWS_BY_SOURCE_FAILED:

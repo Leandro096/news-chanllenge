@@ -8,6 +8,8 @@ import { NEWS_ACTION_TYPES } from './news.types';
 import {
     fetchNewsSuccess,
     fetchNewsFailed,
+    fetchNewsByEverythingSuccess,
+    fetchNewsByEverythingFailed,
     fetchNewsByCategorySuccess,
     fetchNewsByCategoryFailed,
     fetchNewsBySearchSuccess,
@@ -39,6 +41,15 @@ export function* fetchNewsStart({ payload }) {
     }
 };
 
+export function* fetchNewsByEverythingStart({ payload }) {
+    try {
+        const data = yield call(getEverything, payload);
+        yield put(fetchNewsByEverythingSuccess(data));
+    } catch (error) {
+        yield put(fetchNewsByEverythingFailed(error.message));
+    }
+};
+
 export function* fetchNewsByCategoryStart({ payload }) {
     const { category, country, sources, page } = payload;
     try {
@@ -50,9 +61,9 @@ export function* fetchNewsByCategoryStart({ payload }) {
 };
 
 export function* fetchNewsBySearchStart({ payload }) {
-    const { searchQuery, country, sources, page } = payload;
+    const { searchQuery, category, country, sources, page } = payload;
     try {
-        const data = yield call(getEverything, searchQuery, country, sources, page);
+        const data = yield call(getEverything, searchQuery, category, country, sources, page);
         yield put(fetchNewsBySearchSuccess(data));
     } catch (error) {
         yield put(fetchNewsBySearchFailed(error.message));
@@ -113,6 +124,10 @@ export function* onFetchNewsStart() {
     yield takeLatest(NEWS_ACTION_TYPES.FETCH_NEWS_START, fetchNewsStart);
 };
 
+export function* onFetchNewsByEverythingStart() {
+    yield takeLatest(NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_START, fetchNewsByEverythingStart);
+};
+
 export function* onFetchNewsByCategoryStart() {
     yield takeLatest(NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_START, fetchNewsByCategoryStart);
 };
@@ -144,6 +159,7 @@ export function* onFetchNewsByFiltersStart() {
 export function* newsSagas() {
     yield all([
         call(onFetchNewsStart),
+        call(onFetchNewsByEverythingStart),
         call(onFetchNewsByCategoryStart),
         call(onFetchNewsBySearchStart),
         call(onFetchNewsBySourceStart),
