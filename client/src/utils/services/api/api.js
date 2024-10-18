@@ -10,9 +10,11 @@ const api = axios.create({
     },
 });
 
+api.defaults.headers.common["Upgrade-Insecure-Requests"] = "1";
+
 api.interceptors.request.use(
-    async (config) => {
-        const token = await getToken();
+    (config) => {
+        const token = getToken();
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

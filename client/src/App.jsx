@@ -15,14 +15,14 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(checkUserSession())
+    dispatch(checkUserSession());
   }, [dispatch]);
 
   return (
     <Routes>
       <Route path="/" element={<Navigation />}>
         <Route index element={<Home />} />
-        <Route path="/section/*" element={<NewsSection />} />
+        <Route path="/categories/*" element={<NewsSection />} />
       </Route>
     </Routes>
   )

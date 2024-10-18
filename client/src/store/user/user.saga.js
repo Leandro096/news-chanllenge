@@ -3,6 +3,8 @@ import { USER_ACTION_TYPES } from './user.types';
 
 import {
     setCurrentUser,
+    updatePreferenceSuccess,
+    updatePreferenceFailed,
     signInSuccess,
     signInFailed,
     signUpSuccess,
@@ -16,6 +18,7 @@ import {
 import {
     createUser,
     getCurrentUser,
+    updateUserPreference,
     login,
     logout,
 } from '../../utils/db/user.js';
@@ -34,7 +37,21 @@ export function* checkUserSession() {
     } catch (error) {
         yield put(checkUserSessionFailed(error.message));
     }
-} // TO HERE
+}
+
+export function* updateUserPreferenceStart({ payload: preference }) {
+    const { countries, categories, sources, language } = preference;
+    try {
+        const updatedPreference = yield call(updateUserPreference, { countries, categories, sources, language });
+        yield put(updatePreferenceSuccess(updatedPreference));
+        
+        // Actualizar el usuario actual después de actualizar la preferencia
+        const userAuth = yield call(getCurrentUser);
+        yield put(setCurrentUser(userAuth));
+    } catch (error) {
+        yield put(updatePreferenceFailed(error.message));
+    }
+}
 
 export function* signUpUser({ payload: { email, password, name, language } }) {
     try {
@@ -73,6 +90,10 @@ export function* onCheckUserSession() {
     yield takeLatest(USER_ACTION_TYPES.CHECK_USER_SESSION, checkUserSession);
 }
 
+export function* onUpdatePreferenceStart() {
+    yield takeLatest(USER_ACTION_TYPES.UPDATE_PREFERENCE_START, updateUserPreferenceStart);
+}
+
 export function* onSignUpStart() {
     yield takeLatest(USER_ACTION_TYPES.SIGN_UP_START, signUpUser);
 }
@@ -88,6 +109,7 @@ export function* onSignOutStart() {
 export function* userSagas() {
     yield all([
         call(onCheckUserSession),
+        call(onUpdatePreferenceStart),
         call(onSignUpStart),
         call(onEmailSignInStart),
         call(onSignOutStart),

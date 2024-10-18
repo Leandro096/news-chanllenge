@@ -61,10 +61,10 @@ const AuthenticationModal = ({ isOpen, onClose }) => {
             <ModalContainer>
                 <TabButtonWrapper>
                     <TabButton active={isSignIn} onClick={() => setIsSignIn(true)}>
-                        Iniciar Sesión
+                        Sign In
                     </TabButton>
                     <TabButton active={!isSignIn} onClick={() => setIsSignIn(false)}>
-                        Registrarse
+                        Sign Up
                     </TabButton>
                 </TabButtonWrapper>
 

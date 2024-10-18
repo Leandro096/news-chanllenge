@@ -31,6 +31,15 @@ export const getCurrentUser = async () => {
     }
 };
 
+export const updateUserPreference = async (preference) => {
+    try {
+        const response = await api.patch("/api/users/me/preferences", preference);
+        return response.data;
+    } catch (error) {
+        throw new Error("Error while updating user preference: ", error, error);
+    }
+};
+
 export const createUser = async (user) => {
     try {
         const response = await api.post("/api/users", user);
@@ -46,15 +55,6 @@ export const updateUser = async (_id, user) => {
         return response.data;
     } catch (error) {
         throw new Error("Error while updating user", error);
-    }
-};
-
-export const createAvatar = async (formData) => {
-    try {
-        const response = await api.put("/api/users/me", formData);
-        return response.data;
-    } catch (error) {
-        throw new Error("Error while uploading profile picture", error);
     }
 };
 

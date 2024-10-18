@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
+import { Button } from "@mui/material"
 
 export const NavigationContainer = styled.nav`
     display: flex;
@@ -26,11 +27,12 @@ export const NavigationWrapper = styled.div`
         font-size: 2.5rem;
         user-select: none;
         cursor: pointer;
+        margin: 0;
     }
 
-    @media (max-width: 320px) {
+    @media (max-width: 600px) {
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.95rem;
         }
     }
 `;
@@ -40,21 +42,29 @@ export const NewsSections = styled.div`
     justify-content: space-evenly;
     align-items: center;
     height: 100%;
-    /* width: 40%; */
     font-size: 1.5rem;
-    cursor: pointer;
     user-select: none;
 
-    &:div {
-        height: 100%;
-    }
-
-    @media (max-width: 320px) {
+    @media (max-width: 425px) {
         font-size: 1rem;
     }
+`;
 
-    &:button {
-        height: 1rem;
+export const MUIButton = styled(Button)`
+    font-size: 1rem;
+    
+    span {
+        display: none;
+    }
+
+    @media (max-width: 600px) {
+        font-size: 0.8rem;
+    }
+
+    @media (min-width: 425px) {
+        span {
+            display: inline;
+        }
     }
 `;
 
