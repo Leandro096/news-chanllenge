@@ -1,14 +1,27 @@
 import User from "../models/user.js";
+import Preference from "../models/preference.js";
 
 export const createUser = async (req, res) => {
     const user = new User(req.body);
-    console.log("Here we got:", user);
 
     try {
+        // Save the user
         await user.save();
-        const token = await user.generateAuthToken();
-        res.status(201).send({ user, token });
+
+        // Create a preference document for the new user
+        const preference = new Preference({
+            owner: user._id, // Link to the user
+            countries: [], // Default values, can be customized
+            categories: [],
+            sources: [],
+            language: 'es',
+        });
+
+        await preference.save();
+
+        res.status(201).send({ user, preference });
     } catch (error) {
+        console.error(error);
         res.status(400).send(error);
     }
 };
@@ -51,21 +64,28 @@ export const logoutAll = async (req, res) => {
 
 export const readUser = async (req, res) => {
     try {
-        if (!req.user) {
-            return res.status(404).send("No user found logged");
-        }
-        res.send(req.user);
-    } catch (error) {
-        res.status(500).send("Server error trying to get the user");
-    }
-};
+        const user = await User.findById(req.user._id)
+            .populate('preferences')
+            .exec();
 
-export const readUsers = async (req, res) => {
-    try {
-        const users = await User.find({});
-        res.send(users);
+        if (!user) {
+            return res.status(404).send({ error: "User not found" });
+        }
+
+        // Include user info and preferences in the response
+        const preferences = await Preference.findOne({ owner: user._id });
+
+        const response = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            preference: preferences,
+        };
+
+        res.status(200).send(response);
     } catch (error) {
-        res.status(500).send();
+        console.error(error);
+        res.status(500).send({ error: "Internal Server Error" });
     }
 };
 
@@ -86,6 +106,35 @@ export const updateUser = async (req, res) => {
         res.send(req.user);
     } catch (error) {
         res.status(400).send(error);
+    }
+};
+
+export const updateUserPreferences = async (req, res) => {
+    const updates = Object.keys(req.body);
+    const allowedUpdates = ["countries", "categories", "sources", "language"];
+    const isValidOperation = updates.every((update) =>
+        allowedUpdates.includes(update)
+    );
+
+    if (!isValidOperation) {
+        return res.status(400).send({ error: "Invalid updates!" });
+    }
+
+    try {
+        const preference = await Preference.findOne({
+            owner: req.user._id,
+        });
+
+        if (!preference) {
+            return res.status(404).send({ error: "Preferences not found" });
+        }
+
+        updates.forEach((update) => (preference[update] = req.body[update]));
+        await preference.save();
+
+        res.send(preference);
+    } catch (error) {
+        res.status(500).send({ error: "Internal Server Error" });
     }
 };
 

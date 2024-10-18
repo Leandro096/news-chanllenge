@@ -10,6 +10,15 @@ export const checkUserSession = () =>
 export const checkUserSessionFailed = (errorMessage) =>
     createAction(USER_ACTION_TYPES.CHECK_USER_SESSION_FAILED, errorMessage);
 
+export const updatePreferenceStart = (preference) =>
+    createAction(USER_ACTION_TYPES.UPDATE_PREFERENCE_START, preference);
+
+export const updatePreferenceSuccess = (preference) =>
+    createAction(USER_ACTION_TYPES.UPDATE_PREFERENCE_SUCCESS, preference);
+
+export const updatePreferenceFailed = (errorMessage) =>
+    createAction(USER_ACTION_TYPES.UPDATE_PREFERENCE_FAILED, errorMessage);
+
 export const emailSignInStart = (credentials) =>
     createAction(USER_ACTION_TYPES.EMAIL_SIGN_IN_START, credentials);
 
@@ -19,13 +28,8 @@ export const signInSuccess = (user) =>
 export const signInFailed = (errorMessage) =>
     createAction(USER_ACTION_TYPES.SIGN_IN_FAILED, errorMessage);
 
-export const signUpStart = ({ email, password, name, language }) =>
-    createAction(USER_ACTION_TYPES.SIGN_UP_START, {
-        email,
-        password,
-        name,
-        language,
-    });
+export const signUpStart = ({ email, password, name }) =>
+    createAction(USER_ACTION_TYPES.SIGN_UP_START, { email, password, name });
 
 export const signUpSuccess = ({ email, password, name, language }) =>
     createAction(USER_ACTION_TYPES.SIGN_UP_SUCCESS, { email, password, name, language });

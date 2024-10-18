@@ -1,5 +1,6 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import client from "../redis-client.js";
 
 dotenv.config();
 
@@ -19,40 +20,43 @@ const filterRemovedArticles = (articles) => {
 
 // Controlador para Top Headlines
 export const getTopHeadlines = async (req, res) => {
-    const { country = 'us', categories = '', pageSize = 15, page = 1 } = req.query;
+    // Try to get cached data
+    const cachedData = await client.get('top-headlines');
+    const {
+        country = '',
+        category = '',
+        source = '',
+        q = '',
+        pageSize = 15,
+        page = 1,
+    } = req.query;
 
-    let categoryArray;
-    try {
-        categoryArray = Array.isArray(categories)
-            ? categories
-            : categories.split(',').filter(Boolean);
-    } catch (error) {
-        return res.status(400).json({ message: 'Invalid categories format' });
+    if (cachedData && !q) {
+        const parsedData = JSON.parse(cachedData);
+        return res.json({
+            status: 'ok',
+            totalResults: parsedData.totalResults,
+            articles: parsedData.articles,
+            currentPage: parsedData.currentPage,
+            totalPages: parsedData.totalPages,
+        });
     }
 
     try {
-        const fetchPromises = categoryArray.length === 0
-            ? [
-                axios.get('https://newsapi.org/v2/top-headlines', {
-                    params: {
-                        country: country,
-                        category: 'general',
-                        pageSize: 100,
-                        apiKey: API_KEY,
-                    },
-                }),
-            ]
-            : categoryArray.map((category) =>
-                axios.get('https://newsapi.org/v2/top-headlines', {
-                    params: {
-                        country: country,
-                        category,
-                        pageSize: 100,
-                        apiKey: API_KEY,
-                    },
-                })
-            );
+        const fetchPromises = [];
+        const params = { apiKey: API_KEY, pageSize: 100, page, q: q || 'world' };
+        if (source) params.sources = source;
+        else {
+            if (country) params.country = country;
+            if (category) params.category = category;
+        }
 
+        fetchPromises.push(
+            axios.get('https://newsapi.org/v2/top-headlines', {
+                params: params,
+            })
+        );
+        
         const responses = await Promise.all(fetchPromises);
 
         let allArticles = [];
@@ -64,15 +68,24 @@ export const getTopHeadlines = async (req, res) => {
 
         // Filter out "[Removed]" articles
         const filteredArticles = filterRemovedArticles(allArticles);
-
+        
         const totalResults = filteredArticles.length;
         const totalPages = Math.ceil(totalResults / pageSize);
-
+        
         const shuffledArticles = filteredArticles.sort(() => 0.5 - Math.random());
         const paginatedArticles = shuffledArticles.slice(
             (page - 1) * pageSize,
             page * pageSize
         );
+
+        // Cache the filtered articles
+        await client.setEx('top-headlines', 3, JSON.stringify({
+            status: 'ok',
+            totalResults,
+            articles: paginatedArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)),
+            currentPage: parseInt(page, 10),
+            totalPages,
+        })); // Cache for 3 minutes in seconds
 
         res.json({
             status: 'ok',
@@ -82,51 +95,65 @@ export const getTopHeadlines = async (req, res) => {
             totalPages,
         });
     } catch (error) {
-        res.status(500).json({
-            message: 'Error fetching headlines',
-            error: error.message,
+        const status = error.response?.status || 500;
+        res.status(status).json({
+            message: `Error fetching headlines: ${error.message}`,
+            error: error.response?.data || "Unknown error",
         });
     }
 };
 
 // Controlador para Everything
 export const getEverything = async (req, res) => {
-    const { q, from, to, language, sortBy, pageSize = 20, page = 1 } = req.query;
-    const query = q || 'world';
+    const { q = 'world', source, country, from, to, sortBy = 'publishedAt', language = 'en', pageSize = 20, page = 1 } = req.query;
+
+    console.log('Fetching everything with queries:', req.query);
+    const queries = req.query;
+
+    // Try to get cached data
+    const cacheKey = `everything:${q}:${country}:${source}:${page}`; // Unique key for search query
+    const cachedData = await client.get(cacheKey);
+    if (cachedData) {
+        return res.json(JSON.parse(cachedData));
+    }
 
     try {
         const response = await axios.get('https://newsapi.org/v2/everything', {
             params: {
-                q: query,
-                from,
-                to,
-                language,
-                sortBy,
-                pageSize: 100, // Fetch enough data
+                ...queries,
+                pageSize: queries.pageSize || 20,
                 apiKey: API_KEY,
-            }
+            },
         });
 
         // Filter out "[Removed]" articles
         const filteredArticles = filterRemovedArticles(response.data.articles);
 
-        const totalResults = filteredArticles.length;
-        const totalPages = Math.ceil(totalResults / pageSize);
+        // Cache the filtered articles
+        await client.setEx(cacheKey, 3, JSON.stringify(filteredArticles)); // Cache for 3 minutes in seconds    
 
+        const totalResults = filteredArticles.length;
+        
         const paginatedArticles = filteredArticles.slice(
             (page - 1) * pageSize,
             page * pageSize
         );
+        
+        const totalPages = Math.ceil(totalResults / pageSize);
 
         res.json({
-            status: response.data.status,
+            status: 'ok',
             totalResults,
             articles: paginatedArticles,
             currentPage: parseInt(page, 10),
             totalPages,
         });
     } catch (error) {
-        res.status(500).json({ message: 'Error searching for news', error: error.message });
+        const status = error.response?.status || 500;
+        res.status(status).json({
+            message: `Error fetching headlines: ${error.message}`,
+            error: error.response?.data || "Unknown error",
+        });
     }
 };
 
@@ -150,6 +177,12 @@ export const getSpecificNews = async (req, res) => {
 // Controlador para obtener noticias por source
 export const getSources = async (req, res) => {
     const { category, language, country } = req.query;
+
+    const cacheKey = `sources:${category}:${language}:${country}`; // Unique key for sources
+    const cachedData = await client.get(cacheKey);
+    if (cachedData) {
+        return res.json(JSON.parse(cachedData));
+    }
 
     try {
         const response = await axios.get('https://newsapi.org/v2/sources', {

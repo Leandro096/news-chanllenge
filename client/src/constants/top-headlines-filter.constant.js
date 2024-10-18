@@ -81,4 +81,14 @@ export const sourcesConsts = [
         name: "The Washington Post",
         value: "the-washington-post",
     },
+    {
+        name: "Hacker News",
+        value: "hacker-news",
+    }
+];
+
+export const sortConsts = [
+    { name: "Relevancy", value: "relevancy" },
+    { name: "Popularity", value: "popularity"},
+    { name: "Published At", value: "publishedAt" },
 ];

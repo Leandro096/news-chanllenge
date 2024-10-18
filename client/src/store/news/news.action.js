@@ -10,6 +10,15 @@ export const fetchNewsSuccess = (news) =>
 export const fetchNewsFailed = (errorMessage) =>
     createAction(NEWS_ACTION_TYPES.FETCH_NEWS_FAILED, errorMessage);
 
+export const fetchNewsByEverythingStart = ({ country, source, from, to, q, sortBy }) => 
+    createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_START, { country, source, from, to, q, sortBy });
+
+export const fetchNewsByEverythingSuccess = (news) =>
+    createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_SUCCESS, news);
+
+export const fetchNewsByEverythingFailed = (errorMessage) =>
+    createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_EVERYTHING_FAILED, errorMessage);
+
 export const fetchNewsByCategoryStart = (category, country, sources, page) =>
     createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_START, { category, country, sources, page });
 
@@ -19,8 +28,8 @@ export const fetchNewsByCategorySuccess = (news) =>
 export const fetchNewsByCategoryFailed = (errorMessage) =>
     createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_CATEGORY_FAILED, errorMessage);
 
-export const fetchNewsBySearchStart = (searchQuery, country, sources, page) =>
-    createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_START, { searchQuery, country, sources, page });
+export const fetchNewsBySearchStart = (searchQuery, category, country, sources, page) =>
+    createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_START, { searchQuery, category, country, sources, page });
 
 export const fetchNewsBySearchSuccess = (news) =>
     createAction(NEWS_ACTION_TYPES.FETCH_NEWS_BY_SEARCH_SUCCESS, news);

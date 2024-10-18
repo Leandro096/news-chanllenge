@@ -14,37 +14,37 @@ export const newsSections = [
         sections: [
             {
                 title: "Business",
-                route: "/section/business",
+                route: "/categories/business",
                 icon: <FaBriefcase />,
             },
             {
                 title: "Entertainment",
-                route: "/section/entertainment",
+                route: "/categories/entertainment",
                 icon: <FaTv />,
             },
             {
                 title: "General",
-                route: "/section/general",
+                route: "/categories/general",
                 icon: <FaNewspaper />,
             },
             {
                 title: "Health",
-                route: "/section/health",
+                route: "/categories/health",
                 icon: <FaHeartbeat />,
             },
             {
                 title: "Science",
-                route: "/section/science",
+                route: "/categories/science",
                 icon: <FaFlask />,
             },
             {
                 title: "Sports",
-                route: "/section/sports",
+                route: "/categories/sports",
                 icon: <FaFlagCheckered />,
             },
             {
                 title: "Technology",
-                route: "/section/technology",
+                route: "/categories/technology",
                 icon: <FaRobot />,
             },
         ]
@@ -54,37 +54,37 @@ export const newsSections = [
         sections: [
             {
                 title: "Comercio",
-                route: "/section/business",
+                route: "/categories/business",
                 icon: <FaBriefcase />,
             },
             {
                 title: "Entretenimiento",
-                route: "/section/entertainment",
+                route: "/categories/entertainment",
                 icon: <FaTv />,
             },
             {
                 title: "General",
-                route: "/section/general",
+                route: "/categories/general",
                 icon: <FaNewspaper />,
             },
             {
                 title: "Salud",
-                route: "/section/health",
+                route: "/categories/health",
                 icon: <FaHeartbeat />,
             },
             {
                 title: "Ciencia",
-                route: "/section/science",
+                route: "/categories/science",
                 icon: <FaFlask />,
             },
             {
                 title: "Deportes",
-                route: "/section/sports",
+                route: "/categories/sports",
                 icon: <FaFlagCheckered />,
             },
             {
                 title: "Tecnologia",
-                route: "/section/technology",
+                route: "/categories/technology",
                 icon: <FaRobot />,
             },
         ]

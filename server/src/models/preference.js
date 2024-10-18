@@ -6,18 +6,23 @@ const preferenceSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    countries: [{
+    country: {
         type: String,
         trim: true
-    }],
-    cateories: [{
+    },
+    category: {
         type: String,
         trim: true
-    }],
-    sources: [{
+    },
+    sources: {
         type: String,
         trim: true
-    }],
+    },
+    language:{
+        type: String,
+        default: 'es',
+        required: false,
+    },
 });
 
 const Preference = mongoose.model('Preference', preferenceSchema);
