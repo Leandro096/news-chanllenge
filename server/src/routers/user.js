@@ -4,15 +4,13 @@ import {
     createUser,
     login,
     readUser,
-    readUsers,
     updateUser,
+    updateUserPreferences,
     deleteUser,
     logout,
     logoutAll,
-    addUserPreferences,
-    deleteUserPreferences,
-    readUserPreferences,
 } from "../controllers/user.js";
+import { createUserPreferences, deleteUserPreference, readUserPreference } from "../controllers/preference.js";
 
 const router = express.Router();
 
@@ -21,9 +19,6 @@ router.post("/", createUser);
 
 // Login user route
 router.post("/login", login);
-
-// Read users route
-router.get("", auth, readUsers);
 
 // Read user route
 router.get("/me", auth, readUser);
@@ -40,13 +35,16 @@ router.post("/logout", auth, logout);
 // Logout all user route
 router.post("/logoutAll", auth, logoutAll);
 
-// Add user preferences route
-router.post("/preferences", auth, addUserPreferences);
+// create user preferences route and save it in its own collection
+router.post("/preferences",/*  auth, */ createUserPreferences);
 
-// Delete user preferences route
-router.delete("/preferences", auth, deleteUserPreferences);
+// read user preferences route  and save it in its own collection
+router.get("/preferences", auth, readUserPreference);
 
-// Read user preferences route
-router.get("/preferences", auth, readUserPreferences);
+// update user preferences route
+router.patch("/me/preferences", auth, updateUserPreferences);
+
+// delete user preferences route
+router.delete("/preferences/:id", auth, deleteUserPreference);
 
 export default router;

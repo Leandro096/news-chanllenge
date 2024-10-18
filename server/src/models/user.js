@@ -35,11 +35,6 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    language:{
-        type: String,
-        default: 'es',
-        required: false,
-    },
     preferencesId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,

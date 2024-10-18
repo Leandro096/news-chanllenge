@@ -1,9 +1,8 @@
 import Preference from "../models/preference.js";
 
-export const createPreference = async (req, res) => {
+export const createUserPreferences = async (req, res) => {
     const preference = new Preference({
         ...req.body,
-        owner: req.user._id,
     });
 
     try {
@@ -23,7 +22,7 @@ export const readPreferences = async (req, res) => {
     }
 };
 
-export const readPreference = async (req, res) => {
+export const readUserPreference = async (req, res) => {
     try {
         const preference = await Preference.findOne({
             _id: req.params.id,
@@ -31,7 +30,7 @@ export const readPreference = async (req, res) => {
         });
 
         if (!preference) {
-            return res.status(404).send();
+            return res.status(404).send({message: "No preference found"});
         }
 
         res.send(preference);
@@ -40,9 +39,13 @@ export const readPreference = async (req, res) => {
     }
 };
 
-export const updatePreference = async (req, res) => {
+export const updateUserPreference = async (req, res) => {
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).send({ error: "Invalid body!" });
+    }
+
     const updates = Object.keys(req.body);
-    const allowedUpdates = ["countries", "categories", "sources"];
+    const allowedUpdates = ["countries", "categories", "sources", "language"];
     const isValidOperation = updates.every((update) =>
         allowedUpdates.includes(update)
     );
@@ -54,7 +57,6 @@ export const updatePreference = async (req, res) => {
     try {
         const preference = await Preference.findOne({
             _id: req.params.id,
-            owner: req.user._id,
         });
 
         if (!preference) {
@@ -65,11 +67,12 @@ export const updatePreference = async (req, res) => {
         await preference.save();
         res.send(preference);
     } catch (error) {
+        console.error(error);
         res.status(400).send(error);
     }
 };
 
-export const deletePreference = async (req, res) => {
+export const deleteUserPreference = async (req, res) => {
     try {
         const preference = await Preference.findOneAndDelete({
             _id: req.params.id,
