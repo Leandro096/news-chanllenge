@@ -38,7 +38,7 @@ This project relies on external APIs to fetch and display news articles. Proper 
 
 ### **Testing API Calls**
 Ensure the API key and MongoDB URI are correctly configured by running:
-        ```bash
-            npm run dev
-    - If there are any issues, ensure that environment variables are correctly loaded, and the APIs are accessible.
+
+        npm run dev
+- If there are any issues, ensure that environment variables are correctly loaded, and the APIs are accessible.
     
