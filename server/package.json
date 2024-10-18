@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "react-scripts test",
+    "test:backend": "mocha",
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "build": "npm i"
@@ -16,6 +17,8 @@
   "dependencies": {
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
+    "chai": "^5.1.1",
+    "chai-http": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
