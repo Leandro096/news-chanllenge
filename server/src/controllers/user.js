@@ -10,11 +10,11 @@ export const createUser = async (req, res) => {
 
         // Create a preference document for the new user
         const preference = new Preference({
-            owner: user._id, // Link to the user
-            countries: [], // Default values, can be customized
-            categories: [],
-            sources: [],
-            language: 'es',
+            owner: user._id,
+            countries: "",
+            categories: "",
+            sources: "",
+            language: "en",
         });
 
         await preference.save();
@@ -32,6 +32,11 @@ export const login = async (req, res) => {
             req.body.email,
             req.body.password
         );
+
+        if (!user) {
+            return res.status(401).send({ error: "Login failed! Wrong credentials" });
+        }
+
         const token = await user.generateAuthToken();
         
         res.send({ user, token });
@@ -45,6 +50,7 @@ export const logout = async (req, res) => {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token;
         });
+        
         await req.user.save();
         res.send();
     } catch (error) {
@@ -84,7 +90,6 @@ export const readUser = async (req, res) => {
 
         res.status(200).send(response);
     } catch (error) {
-        console.error(error);
         res.status(500).send({ error: "Internal Server Error" });
     }
 };
@@ -145,38 +150,4 @@ export const deleteUser = async (req, res) => {
     } catch (error) {
         res.status(500).send();
     }
-};
-
-export const readUserPreferences = async (req, res) => {
-    res.send(req.user.preferences);
-};
-
-export const addUserPreferences = async (req, res) => {
-    try {
-        req.user.preferences = req.user.preferences.concat(req.body);
-        await req.user.save();
-        res.status(201).send(req.user.preferences);
-    } catch (error) {
-        res.status(400).send(error);
-    }
-};
-
-export const deleteUserPreferences = async (req, res) => {
-    try {
-        req.user.preferences = req.user.preferences.filter((preference) => {
-            return preference !== req.params.preference;
-        });
-        await req.user.save();
-        res.send(req.user.preferences);
-    } catch (error) {
-        res.status(500).send();
-    }
-};
-
-export const readUserToken = async (req, res) => {
-    res.send(req.token);
-};
-
-export const readUserTokens = async (req, res) => {
-    res.send(req.user.tokens);
 };

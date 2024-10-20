@@ -105,9 +105,6 @@ export const getTopHeadlines = async (req, res) => {
 
 // Controlador para Everything
 export const getEverything = async (req, res) => {
-    const { q = 'world', source, country, from, to, sortBy = 'publishedAt', language = 'en', pageSize = 20, page = 1 } = req.query;
-
-    console.log('Fetching everything with queries:', req.query);
     const queries = req.query;
 
     // Try to get cached data
@@ -154,23 +151,6 @@ export const getEverything = async (req, res) => {
             message: `Error fetching headlines: ${error.message}`,
             error: error.response?.data || "Unknown error",
         });
-    }
-};
-
-// Controlador para obtener solo una noticia
-export const getSpecificNews = async (req, res) => {
-    const { url } = req.params;
-
-    try {
-        const article = await findArticleByUrl(url); // Implement this function
-        if (!article || Object.values(article).some(value => 
-            typeof value === 'string' && value.includes('[Removed]')
-        )) {
-            return res.status(404).json({ message: 'Article not found or removed' });
-        }
-        res.json(article);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching specific news', error: error.message });
     }
 };
 
