@@ -19,13 +19,13 @@ const sagaMiddleware = createSagaMiddleware();
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const middleWares = [
-    import.meta.env.MODE !== 'production' && logger,
+    import.meta.env.VITE_MODE !== 'production' && logger,
     sagaMiddleware,
 ].filter(Boolean);
 
 
 const composeEnhancer =
-    (import.meta.env.MODE !== 'production' &&
+    (import.meta.env.VITE_MODE !== 'production' &&
         window &&
         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
