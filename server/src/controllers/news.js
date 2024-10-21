@@ -20,80 +20,60 @@ const filterRemovedArticles = (articles) => {
 
 // Controlador para Top Headlines
 export const getTopHeadlines = async (req, res) => {
-    // Try to get cached data
-    const cachedData = await client.get('top-headlines');
-    const {
-        country = '',
-        category = '',
-        source = '',
-        q = '',
-        pageSize = 15,
-        page = 1,
-    } = req.query;
+    const queries = req.query;
 
-    if (cachedData && !q) {
+    const pageNumber = parseInt(queries.page) || 1;
+    const pageSizeMax = Math.min(parseInt(queries.pageSize) || 30, 100);
+
+    const cacheKey = `top-headlines:${JSON.stringify(queries)}`;
+    const cachedData = await client.get(cacheKey);
+
+    if (cachedData && !queries.q) {
         const parsedData = JSON.parse(cachedData);
-        return res.json({
-            status: 'ok',
-            totalResults: parsedData.totalResults,
-            articles: parsedData.articles,
-            currentPage: parsedData.currentPage,
-            totalPages: parsedData.totalPages,
-        });
+        return res.json(parsedData);
     }
 
     try {
-        const fetchPromises = [];
-        const params = { apiKey: API_KEY, pageSize: 100, page, q: q || 'world' };
-        if (source) params.sources = source;
+        const params = {
+            apiKey: API_KEY,
+            page: 1, // Always fetch from the first page
+            pageSize: 100, // Fetch maximum allowed articles
+            q: queries.q || 'world'
+        };
+
+        if (queries.source) params.sources = queries.source;
         else {
-            if (country) params.country = country;
-            if (category) params.category = category;
+            if (queries.country) params.country = queries.country;
+            if (queries.category) params.category = queries.category;
         }
 
-        fetchPromises.push(
-            axios.get('https://newsapi.org/v2/top-headlines', {
-                params: params,
-            })
-        );
-        
-        const responses = await Promise.all(fetchPromises);
+        const response = await axios.get("https://newsapi.org/v2/top-headlines", { params });
 
-        let allArticles = [];
-        responses.forEach((response) => {
-            if (response.data.articles) {
-                allArticles.push(...response.data.articles);
-            }
-        });
+        const { articles, totalResults } = response.data;
 
-        // Filter out "[Removed]" articles
-        const filteredArticles = filterRemovedArticles(allArticles);
-        
-        const totalResults = filteredArticles.length;
-        const totalPages = Math.ceil(totalResults / pageSize);
-        
-        const shuffledArticles = filteredArticles.sort(() => 0.5 - Math.random());
-        const paginatedArticles = shuffledArticles.slice(
-            (page - 1) * pageSize,
-            page * pageSize
-        );
+        const filteredArticles = filterRemovedArticles(articles);
 
-        // Cache the filtered articles
-        await client.setEx('top-headlines', 3, JSON.stringify({
+        const totalFilteredResults = filteredArticles.length;
+
+        // Implement pagination on filtered articles
+        const startIndex = (pageNumber - 1) * pageSizeMax;
+        const endIndex = startIndex + pageSizeMax;
+        const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+
+        const totalPages = Math.ceil(totalFilteredResults / pageSizeMax);
+
+        const responseObj = {
             status: 'ok',
-            totalResults,
+            totalResults: totalFilteredResults,
             articles: paginatedArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)),
-            currentPage: parseInt(page, 10),
+            currentPage: pageNumber,
             totalPages,
-        })); // Cache for 3 minutes in seconds
+            totalLeft: totalResults - totalFilteredResults,
+        };
+        
+        await client.setEx(cacheKey, 30, JSON.stringify(responseObj));
 
-        res.json({
-            status: 'ok',
-            totalResults,
-            articles: paginatedArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)),
-            currentPage: parseInt(page, 10),
-            totalPages,
-        });
+        res.status(200).json(responseObj);
     } catch (error) {
         const status = error.response?.status || 500;
         res.status(status).json({
@@ -107,48 +87,56 @@ export const getTopHeadlines = async (req, res) => {
 export const getEverything = async (req, res) => {
     const queries = req.query;
 
-    // Try to get cached data
-    const cacheKey = `everything:${q}:${country}:${source}:${page}`; // Unique key for search query
+    const pageNumber = parseInt(queries.page) || 1;
+    const pageSizeMax = Math.min(parseInt(queries.pageSize) || 15, 100);
+
+    const cacheKey = `everything:${JSON.stringify(queries)}`;
     const cachedData = await client.get(cacheKey);
+
     if (cachedData) {
-        return res.json(JSON.parse(cachedData));
+        const parsedData = JSON.parse(cachedData);
+        return res.json(parsedData);
     }
 
     try {
-        const response = await axios.get('https://newsapi.org/v2/everything', {
-            params: {
-                ...queries,
-                pageSize: queries.pageSize || 20,
-                apiKey: API_KEY,
-            },
-        });
+        const params = {
+            ...queries,
+            apiKey: API_KEY,
+            page: 1, // Always fetch from the first page
+            pageSize: 100, // Fetch maximum allowed articles
+        };
 
-        // Filter out "[Removed]" articles
-        const filteredArticles = filterRemovedArticles(response.data.articles);
+        const response = await axios.get('https://newsapi.org/v2/everything', { params });
 
-        // Cache the filtered articles
-        await client.setEx(cacheKey, 3, JSON.stringify(filteredArticles)); // Cache for 3 minutes in seconds    
+        const { articles, totalResults } = response.data;
 
-        const totalResults = filteredArticles.length;
-        
-        const paginatedArticles = filteredArticles.slice(
-            (page - 1) * pageSize,
-            page * pageSize
-        );
-        
-        const totalPages = Math.ceil(totalResults / pageSize);
+        const filteredArticles = filterRemovedArticles(articles);
 
-        res.json({
+        const totalFilteredResults = filteredArticles.length;
+
+        // Implement pagination on filtered articles
+        const startIndex = (pageNumber - 1) * pageSizeMax;
+        const endIndex = startIndex + pageSizeMax;
+        const paginatedArticles = filteredArticles.slice(startIndex, endIndex);
+
+        const totalPages = Math.ceil(totalFilteredResults / pageSizeMax);
+
+        const responseObj = {
             status: 'ok',
-            totalResults,
-            articles: paginatedArticles,
-            currentPage: parseInt(page, 10),
+            totalResults: totalFilteredResults,
+            articles: paginatedArticles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt)),
+            currentPage: pageNumber,
             totalPages,
-        });
+        };
+
+        // Cache the filtered and paginated articles
+        await client.setEx(cacheKey, 30, JSON.stringify(responseObj)); // Cache for 1 hour
+
+        res.status(200).json(responseObj);
     } catch (error) {
         const status = error.response?.status || 500;
         res.status(status).json({
-            message: `Error fetching headlines: ${error.message}`,
+            message: `Error fetching all news: ${error.message}`,
             error: error.response?.data || "Unknown error",
         });
     }
