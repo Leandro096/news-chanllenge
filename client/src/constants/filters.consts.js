@@ -41,15 +41,19 @@ const defaultEverythingFilters = {
     excludeDomains: "",
     from: "",
     to: "",
+    page: 1,
+    pageSize: 15,
     language: "en",
     sortBy: "publishedAt",
 };
 
 const defaultTopHeadlines = {
-    category: "",
     country: "",
-    language: "en",
-    pageSize: 20,
+    category: "",
+    q: "",
+    page: 1,
+    pageSize: 15,
+    sources: "",
 };
 
 const languageConsts = [
