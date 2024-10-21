@@ -14,9 +14,8 @@ import {
 import { getNews, getEverything } from '../../utils/db/news';
 
 export function* fetchNewsStart({ payload }) {
-    const { country, categories, sources, page } = payload;
     try {
-        const data = yield call(getNews, country, categories, sources, page);
+        const data = yield call(getNews, payload);
         yield put(fetchNewsSuccess(data));
     } catch (error) {
         yield put(fetchNewsFailed(error.message));

@@ -26,38 +26,3 @@ export const selectNewsCurrentPage = createSelector(
     [selectNewsReducer],
     news => news.currentPage
 );
-
-export const selectNewsCountry = createSelector(
-    [selectNewsReducer],
-    news => news.country
-);
-
-export const selectNewsCategories = createSelector(
-    [selectNewsReducer],
-    news => news.categories
-);
-
-export const selectNewsSources = createSelector(
-    [selectNewsReducer],
-    news => news.sources
-);
-
-export const selectNewsSearchQuery = createSelector(
-    [selectNewsReducer],
-    news => news.searchQuery
-);
-
-export const selectNewsLanguage = createSelector(
-    [selectNewsReducer],
-    news => news.language
-);
-
-export const selectNewsUserPreferences = createSelector(
-    [selectNewsReducer],
-    news => news.userPreferences
-);
-
-export const selectNewsFilters = createSelector(
-    [selectNewsReducer],
-    news => news.filters
-);

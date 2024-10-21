@@ -12,7 +12,6 @@ export const getNews = async (params = {}) => {
 };
 
 export const getEverything = async (queries) => {
-    console.log(queries);
     try {
         const response = await api.get('/api/news/everything', {
             params: {
@@ -21,8 +20,7 @@ export const getEverything = async (queries) => {
         });
         return response.data; // Return the data from the response
     } catch (error) {
-        console.error('Error fetching everything:', error);
-        throw error; // Re-throw the error for handling elsewhere
+        throw new Error(`Error while fetching news: ${error.message}`);
     }
 };
 
@@ -31,7 +29,6 @@ export const getSpecificNews = async (url) => {
         const response = await api.get(`/api/news/news/${encodeURIComponent(url)}`); // Use encodeURIComponent to handle special characters in the URL
         return response.data; // Return the article data
     } catch (error) {
-        console.error('Error fetching specific news:', error);
-        throw error; // Re-throw the error for handling elsewhere
+        throw new Error(`Error while fetching news: ${error.message}`);
     }
 };
