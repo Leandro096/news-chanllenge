@@ -71,7 +71,7 @@ export const getTopHeadlines = async (req, res) => {
             totalLeft: totalResults - totalFilteredResults,
         };
         
-        await client.setEx(cacheKey, 30, JSON.stringify(responseObj));
+        await client.setEx(cacheKey, 600, JSON.stringify(responseObj)); // Cache for 10 minutes
 
         res.status(200).json(responseObj);
     } catch (error) {
@@ -130,7 +130,7 @@ export const getEverything = async (req, res) => {
         };
 
         // Cache the filtered and paginated articles
-        await client.setEx(cacheKey, 30, JSON.stringify(responseObj)); // Cache for 1 hour
+        await client.setEx(cacheKey, 600, JSON.stringify(responseObj)); // Cache for 10 minutes
 
         res.status(200).json(responseObj);
     } catch (error) {
