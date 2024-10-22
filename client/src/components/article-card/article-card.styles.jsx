@@ -22,6 +22,11 @@ export const ArticleTitle = styled.h1`
     margin: 0;
 `;
 
+export const ArticleDate = styled.p`
+    font-size: 0.8rem;
+    margin: 0;
+`;
+
 export const ArticleImage = styled.img`
     width: 100%;
     height: 200px;
