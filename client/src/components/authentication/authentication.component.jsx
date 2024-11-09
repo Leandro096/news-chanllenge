@@ -16,19 +16,22 @@ import {
     SwitchText,
 } from './authentication.styles';
 import Spinner from '../spinner/spinner.component';
+import { toast } from 'sonner';
+
+const defaultFields = {
+    name: '',
+    password: '',
+    email: '',
+    language: '',
+    confirmPassword: '',
+}
 
 const AuthenticationModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
     const isLoading = useSelector(selectIsUserLoading);
 
     const [isSignIn, setIsSignIn] = useState(true);
-    const [formData, setFormData] = useState({
-        name: '',
-        password: '',
-        email: '',
-        language: '',
-        confirmPassword: '',
-    });
+    const [formData, setFormData] = useState(defaultFields);
 
     const { email, password, confirmPassword, name, language } = formData;
 
@@ -41,12 +44,16 @@ const AuthenticationModal = ({ isOpen, onClose }) => {
         e.preventDefault();
         if (isSignIn) {
             dispatch(emailSignInStart({ email, password }));
+            toast.success("Welcome back!");
         } else if (password !== confirmPassword) {
-            alert('Passwords do not match');
+            toast.error('Passwords do not match');
             return;
         } else {
             dispatch(signUpStart({ email, password, name, language }));
+            toast.success("Welcome to News Challenge!");
         }
+
+        setFormData(defaultFields);
 
         onClose();
     };

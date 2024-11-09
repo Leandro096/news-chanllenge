@@ -8,6 +8,7 @@ import { persistor, store } from './store/store.js'
 import { PersistGate } from 'redux-persist/integration/react'
 import { StyleSheetManager } from 'styled-components'
 import { StylesProps } from './utils/styles-props/styles-props.js'
+import { Toaster } from 'sonner'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -20,5 +21,13 @@ createRoot(document.getElementById('root')).render(
         </StyleSheetManager>
       </PersistGate>
     </Provider>
+    <Toaster
+      position='bottom-right'
+      dir='auto'
+      visibleToasts={2}
+      duration={3000}
+      richColors
+      closeButton
+    />
   </StrictMode>,
 )

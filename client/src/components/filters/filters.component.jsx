@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentUser } from "../../store/user/user.selector";
 import { updatePreferenceStart } from "../../store/user/user.action";
+import { toast } from "sonner";
 
 const defaultFilters = {
     countries: "",
@@ -50,9 +51,14 @@ const Filters = ({ setFilters }) => {
     };
 
     const handleSaveFilters = () => {
-        dispatch(updatePreferenceStart(filtersValues));
-        setFilters(filtersValues);
-        setIsFilterOpen(false);
+        if (currentUserPreferences) {
+            dispatch(updatePreferenceStart(filtersValues));
+        } else {
+            setFilters(filtersValues);
+            toast.info("Please login or sign up, to save your preferences.");
+        }
+
+        setIsFilterOpen((prev) => !prev);
     };
 
     return (

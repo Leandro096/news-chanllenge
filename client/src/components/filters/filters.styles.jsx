@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const FilterContainer = styled.div`
     position: relative;
+    z-index: 100;
 `;
 
 export const FilterWrapper = styled.div` 
