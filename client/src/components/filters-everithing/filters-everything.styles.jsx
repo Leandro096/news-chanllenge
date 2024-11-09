@@ -4,6 +4,7 @@ export const FilterEverythingContainer = styled.div`
     position: relative;
     display: flex;
     justify-content: flex-end;
+    z-index: 100;
 `;
 
 export const FilterEverythingWrapper = styled.div` 

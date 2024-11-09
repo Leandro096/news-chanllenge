@@ -19,7 +19,7 @@ const defaultFilters = {
     countries: "",
     categories: "",
     sources: "",
-    language: "es",
+    language: "en",
 };
 
 const Filters = ({ setFilters }) => {
@@ -53,6 +53,7 @@ const Filters = ({ setFilters }) => {
     const handleSaveFilters = () => {
         if (currentUserPreferences) {
             dispatch(updatePreferenceStart(filtersValues));
+            toast.success("Preferences saved successfully.");
         } else {
             setFilters(filtersValues);
             toast.info("Please login or sign up, to save your preferences.");

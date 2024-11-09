@@ -22,7 +22,7 @@ const sourcesConsts = [
     { name: "CNN", value: "cnn" },
     { name: "Fox News", value: "fox-news" },
     { name: "Google News", value: "google-news" },
-    { name: "The New York Times", value: "the-new-york-times" },
+    { name: "The Washington Times", value: "the-washington-times" },
     { name: "The Washington Post", value: "the-washington-post" },
     { name: "Hacker News", value: "hacker-news" }
 ];

@@ -6,11 +6,11 @@ const preferenceSchema = new mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    country: {
+    countries: {
         type: String,
         trim: true
     },
-    category: {
+    categories: {
         type: String,
         trim: true
     },

@@ -43,6 +43,7 @@ export function* updateUserPreferenceStart({ payload: preference }) {
     const { countries, categories, sources, language } = preference;
     try {
         const updatedPreference = yield call(updateUserPreference, { countries, categories, sources, language });
+        console.log(updatedPreference);
         yield put(updatePreferenceSuccess(updatedPreference));
         
         // Actualizar el usuario actual después de actualizar la preferencia

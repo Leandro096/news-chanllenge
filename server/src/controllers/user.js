@@ -38,8 +38,19 @@ export const login = async (req, res) => {
         }
 
         const token = await user.generateAuthToken();
-        
-        res.send({ user, token });
+
+        // Include user info and preferences in the response
+        const preferences = await Preference.findOne({ owner: user._id });
+
+        const response = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            preference: preferences,
+            token,
+        }
+
+        res.send(response);
     } catch (error) {
         res.status(400).send();
     }
@@ -50,7 +61,7 @@ export const logout = async (req, res) => {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token;
         });
-        
+
         await req.user.save();
         res.send();
     } catch (error) {
